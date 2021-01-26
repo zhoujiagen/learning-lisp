@@ -41,6 +41,9 @@ nav:
         - '字典': common-lisp/HyperSpec/Dictionary.md
         - '978个符号': common-lisp/HyperSpec/Symbols.md
         - '图片索引': common-lisp/HyperSpec/Figures-index.md
+    - Scheme:
+      - 'Index': scheme/scheme.md
+      - 'Chez Scheme': scheme/chez.md
 
 
 #theme: readthedocs

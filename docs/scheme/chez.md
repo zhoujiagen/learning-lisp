@@ -5,7 +5,7 @@ core syntax of Scheme:
 ```
 <program>               --> <form>*
 <form>                  --> <definition> | <expression>
-<definition>            --> <variable definition> 
+<definition>            --> <variable definition>
                             | (begin <definition>*)
 ; 变量定义
 <variable definition>   --> (define <variable> <expression>)
@@ -80,7 +80,7 @@ core syntax of Scheme:
 - `keyword`均在`form1` `form2` `...`中绑定, 在`letrec-syntax`中的`expr`中绑定.
 
 
-### 语法规则的transformer
+### 语法规则的transformer: `syntax-rules`
 
 ``` scheme
 (syntax-rules (literal ...) clause ...)
@@ -91,7 +91,7 @@ core syntax of Scheme:
 
 `pattern`的详细说明:
 
-- `pattern`由列表结构、向量结构、标识符和常量构成. 
+- `pattern`由列表结构、向量结构、标识符和常量构成.
 - `pattern`中的标识符可以是字面量、模式变量、下划线(`_`)、省略号(ellipsis, `...`). 如果标识符不是`_`或`...`, 且在`(literal ...)`中出现, 则它是一个字面量.
 - `pattern`中的列表结构和向量结构描述了输入的形式所需的基本结构; `_`和模式变量描述了任意结构; 字面量和常量描述了必须精确匹配的原子片段; `...`描述了在它之前的子模式重复出现.
 
@@ -143,7 +143,7 @@ _
 - `(identifier-syntax (id1 tmpl1) ((set! id2 e2) tmpl2))`则允许transformer指定使用`set!`时的操作.
 
 
-### 语法案例的transformer
+### 语法案例的transformer: `syntax-case`、`syntax`
 
 
 `syntax-case`是`syntax-rules`的泛化版本.

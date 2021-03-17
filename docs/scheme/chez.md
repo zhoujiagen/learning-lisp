@@ -264,3 +264,50 @@ _
 `generate-temporaries`用于构造临时标识符.
 
 `list`可以是任意列表, 它的内容不重要. 生成的临时标识符的数量与`list`中元素数量相同, 每个临时标识符互不相同.
+
+
+## 记录类型(Record Types)
+
+> TODO(zhoujiagen) restart here! 2021-03-17
+
+> abbreviation
+> rtd: record type descriptor
+> rcd: record constructor descriptor
+
+record definition: defines
+
+- a record type identified by `record-name`
+- a constructor: default `make-record-name`
+- a predicate: default `record-name?`
+- assessors: default `record-name-field-name`
+- mutators: default `record-name-field-name-set!`
+
+``` scheme
+(define-record-type record-name clause ...)
+(define-record-type (record-name constructor pred) clause ...)
+```
+
+- Fields clause
+
+``` scheme
+(fields field-spec)
+
+; field-spec
+field-name
+(immutable field-name)
+(mutable field-name)
+(immutable field-name accessor-name)
+(mutable field-name accessor-name mutator-name)
+```
+
+- Parent clause
+
+- Nongenerative clause
+
+- Protocol clause
+
+- Sealed clause
+
+- Opaque clause
+
+- Parent-rtd clause

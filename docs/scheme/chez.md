@@ -1,6 +1,465 @@
 # Chez Scheme
 
-core syntax of Scheme:
+> R. Kent Dybvig. The Scheme Programming Language. The MIT Press, 2009.
+
+|#|Title|Progress|Description|
+|:---|:---|:---|:---|
+|1|Introduction|100%|20210327|
+|2|Getting Started|100%|20210328|
+|3|Going Further|||
+|4|Procedures and Variable Bindings|||
+|5|Control Operations|||
+|6|Operations on Objects|||
+|7|Input and Output|||
+|8|Syntactic Extension|||
+|9|Records|||
+|10|Libraries and Top-Level Programs|||
+|11|Exceptions and Conditions|||
+|12|Extended Examples|||
+
+## 1 Introduction   
+
+标识符(identifier): 字母、数字、特殊字符(`?!.+-*/<=>:$%^&_~@`)和Unicode字符; 大小写敏感.
+
+带结构的形式(form)和列表(list)常量用括号`()`包裹, `[]`可以用在`()`可以出现的地方.
+
+向量(vector)用`#()`包裹, 字节向量(bytevector)用`#vu8()`包裹.
+
+字符串用`""`包裹, 字符以`#\`开始.
+
+数字:<br/>
+整数: `-123`<br/>
+分数: `1/2`<br/>
+浮点数: `1.3`<br/>
+科学记数法: `1e23`<br/>
+复数: `1.3-2.7i`, `-1.2@73`.
+
+布尔值: `#t`, `#f`.
+
+注释:<br/>
+行注释: `;`<br/>
+过程(procedure)注释: `;;;`<br/>
+块(block)注释: `#|`, `#|`<br/>
+数据项(datum)注释`#;`.
+
+不可打印的表示: `#<procedure>`, `#<port>`.
+
+命名约定:
+
+- 谓词(predicate)以`?`结尾: `eq?`, `zero?`, `string=?`;
+- 类型谓词(type predicate)用类型加上`?`表示: `pair?`;
+- 字符、字符串和向量过程分别以`char-`、`string-`、`vector`开始;
+- 转换对象类型的过程用`type1->type2`表示: `vector->list`;
+- 产生副作用的过程和句法形式(syntactic form)的名称以`!`结尾: `set!`, `vector-set!`.
+
+记法约定:
+
+- `unspecified`: 只用于产生副作用的标准过程或句法形式的返回值是未描述的;
+- `syntax violation`: 描述程序是形式错误的, 在句法形式的结构不匹配它的原型时发生;
+- `...`用于表示子表达式(subexpression)或参数(argument)的零次或多次出现.
+
+## 2 Getting Started   
+
+### 2.1 Interacting with Scheme
+
+REPL: read-evalute-print loop.
+
+`define`建立变量绑定, `lambda`创建过程:
+
+``` scheme
+;;; square.ss
+(define square
+  (lambda (n)
+    (* n n)))
+```
+
+加载文件:
+
+``` scheme
+(load "square.ss")
+```
+
+### 2.2 Simple Expressions
+
+过程应用(procedure application): `(procedure arg ...)`.
+
+对象的列表: `(obj1 obj2 ...)`.
+
+`quote`: 显式的告知Scheme将列表视为数据而不是过程应用.<br/>
+
+``` scheme
+(quote (1 2 3 4))
+; 简写形式
+'(1 2 3 4)
+
+(quote hello)
+'2
+'2/3
+(quote "hi")
+```
+
+列表操作: `car`, `cdr`, `cons`.<br/>
+`cons`: 构造对(pair).<br/>
+合式列表(proper list): 列表的最后一个对的`cdr`是空列表;<br/>
+非合式列表(improper list): 以点对(dotted-pair)记法打印.
+
+``` scheme
+(cons 'a 'b) ; (a . b)
+```
+
+<div>
+{% dot list.svg
+    digraph list {
+      rankdir=LR;
+      node [shape=record, width=1, height=.1];
+      a [shape=record, label="{a|}"];
+      b [shape=record, label="{b|}"];
+      c [shape=record, label="{c|}"];
+      d [shape=record, label="{d|( )}"];
+
+      a -> b;
+      b -> c;
+      c -> d;
+
+      ab [shape=record, label="{a|b}"];
+    }
+%}
+</div>
+
+### 2.3 Evaluating Scheme Expressions
+
+```
+(procedure arg1 ... argn)
+```
+
+- Scheme求值起可以按任意顺序求值这些表达式: `procedure`, `argi`;
+- `procedure`的求值方式与`argi`相同.
+
+核心句法形式(core syntactic form): 常量对象, 过程应用, `quote`表达式等;<br/>
+句法扩展(syntactic extension): 用核心句法形式定义的句法形式.
+
+### 2.4 Variables and Let Expressions
+
+`let`表达式: 句法形式`let`绑定变量
+
+``` scheme
+; expr: 表达式
+; var: 变量
+(let ((var expr) ...) 
+  body1 
+  body2 
+  ...)
+
+(let [(var expr) ...] body1 body2 ...)
+```
+
+- `let`绑定的变量比在`let`的体中可见;
+- 嵌套的`let`表达式: 在内部`let`表达式中绑定了与外部`let`相同的变量, 内部`let`的体中只可见内部`let`创建的绑定;
+- 内部的绑定遮盖(shadow)了外部的绑定;
+- 作用域(scope): 变量绑定可见的区域;
+- 词法作用域(lexical scoping): 每个绑定的作用域可以通过直接文本分析程序获得.
+
+### 2.5 Lambda Expressions
+
+`lambda`表达式: 创建新的过程
+
+``` scheme
+; (var ...)不一定是合式列表:
+; (1) 变量的合式列表: (var1 ... varn)
+; (2) 单个变量: varr
+; (3) 变量的非合式列表: (var1 ... varn . varr)
+
+(lambda (var ...)
+  body1
+  body2
+  ...)
+```
+
+应用`lambda`表达式:
+
+``` scheme
+((lambda (x) (+ x x)) (* 3 4)) ; 24
+```
+
+`lambda`表达式是对象(过程是对象):
+
+``` scheme
+(let ([double (lambda (x) (+ x x))])
+  (list (double (* 3 4))))
+```
+
+`x`在`lambda`表达式中自由出现, 是自由变量(free variable); `y`不是:
+
+``` scheme
+(let ([x 'a])
+  (let ([f (lambda (y) (list x y))])
+    (f 'b)))
+```
+
+`let`表达式是`lambda`和过程应用定义的句法扩展:
+
+``` scheme
+(let ((var expr) ...) body1 body2 ...)
+((lambda (var ...) body1 boyd2 ...)
+  expr ...)
+```
+
+### 2.6 Top-Level Definitions
+
+`define`创建顶级定义(top-level definition):
+
+``` scheme
+(define var expr)
+```
+
+``` scheme
+; 定义过程
+(define double-any
+  (lambda (f x)
+    (f x x)))
+
+; 定义对象
+(define sandwich "peanut-butter-and-jelly")
+```
+
+`define`的defun语法: 当`expr`是一个`lambda`表达式时
+
+``` scheme
+(define var0 (lambda (var1 ... varn) e1 e2 ...))
+(define (var0 var1 ... varn) e1 e2 ...)
+
+(define var0 (lambda varr) e1 e2 ...)
+(define (var0 . varr) e1 e2 ...)
+
+(define var0 (lambda var1 ... varn . varr) e1 e2 ...)
+(define (var0 var1 ... varn . varr) e1 e2 ...)
+```
+
+在`lambda`表达式中未定义的变量, 在结果过程被实际应用之前, 不应该导致异常:
+
+``` scheme
+(define proc1 (lambda (x y) (proc2 y x)))
+
+(define proc2 cons)
+(proc1 'a 'b) ; (b . a)
+```
+
+### 2.7 Conditional Expressions
+
+`if`表达式: 使用`if`句法形式
+
+``` scheme
+(if test consequent alternative)
+```
+
+真假值: 只有`#f`视为假, 其他对象均视为真.
+
+`or`表达式: 
+
+``` scheme
+; (or): #f
+; 按序对expr求值:
+; (a) 有一个expr求值为真: 该expr的值
+; (b) 耗尽expr: #f
+
+(or expr ...)
+```
+
+`and`表达式:
+
+``` scheme
+; (and): #t
+; 按序对expor求值:
+; (a) 有一个expr求值为假: #f
+; (b) 耗尽expr: 最后一个表达式的值
+(and expr ...)
+```
+
+`not`: 真假值取反.
+
+谓词: `=`, `<`, `>`, `<=`, `>=`, `null?`, `eqv?`等.
+
+类型谓词: `pair?`, `symbol?`, `number?`, `string?`等.
+
+
+`cond`表达式: 多个test和alternative
+
+``` scheme
+(cond (test expr) ... (else expr))
+```
+
+``` sheme
+(define sign
+  (lambda (n)
+    (cond
+      [(< n 0) -1]
+      [(> n 0) +1]
+      [else 0])))
+```
+
+### 2.8 Simple Recursion
+
+递归过程(recursive procedure): 应用自身的过程.<br/>
+两个基本元素: base case, recursion step.
+
+``` scheme
+(define length
+    (lambda (lst)
+        (if (null? lst)
+            0
+            (+ (length (cdr lst)) 1))))
+```
+
+Trace:
+
+``` scheme
+(trace length)
+
+|(length (a b c d))
+| (length (b c d))
+| |(length (c d))
+| | (length (d))
+| | |(length ())
+| | |0
+| | 1
+| |2
+| 3
+|4
+4
+```
+
+迭代构造(iteration construct)用递归表示: list, pair. <br/>
+特殊的迭代形式: `map`
+
+``` scheme
+(define abs
+    (lambda (x)
+        (if (< x 0)
+            (- 0 x)
+            x)))
+
+(map abs '(1 -2 3 -4 5 -6)) ; (1 2 3 4 5 6)            
+```
+
+### 2.9 Assignment
+
+赋值(assignment)并不像使用`let`和`lambda`创建新的绑定(binding), 而是使用`set!`修改既有绑定的值.
+
+所有局部变量在绑定时立即赋予一个值.
+
+赋值通常用于实现一些必须维护内部状态的过程:
+
+> Example: stack.ss
+
+``` scheme
+(define next 0)
+(define count
+    (lambda ()
+        (let ([v next])
+            (set! next (+ next 1))
+            v)))
+
+(count) ; 0
+(count) ; 1        
+```
+
+设置pair的car和cdr: `set-car!`, `set-cdr!`.
+
+> Example: queue.ss
+
+## 3 Going Further
+### 3.1 Syntactic Extension
+### 3.2 More Recursion
+### 3.3 Continuations
+### 3.4 Continuation Passing Style
+### 3.5 Internal Definitions
+### 3.6 Libraries
+
+## 4 Procedures and Variable Bindings
+### 4.1 Variable References
+### 4.2 Lambda
+### 4.3 Case-Lambda
+### 4.4 Local Binding
+### 4.5 Multiple Values
+### 4.6 Variable Definitions
+### 4.7 Assignment
+
+## 5 Control Operations
+### 5.1 Procedure Application
+### 5.2 Sequencing
+### 5.3 Conditionals
+### 5.4 Recursion and Iteration
+### 5.5 Mapping and Folding
+### 5.6 Continuations
+### 5.7 Delayed Evaluation
+### 5.8 Multiple Values
+### 5.9 Eval
+
+## 6 Operations on Objects
+### 6.1 Constants and Quotation
+### 6.2 Generic Equivalence and Type Predicates
+### 6.3 Lists and Pairs
+### 6.4 Numbers
+### 6.5 Fixnums
+### 6.6 Flonums
+### 6.7 Characters
+### 6.8 Strings
+### 6.9 Vectors
+### 6.10 Bytevectors
+### 6.11 Symbols
+### 6.12 Booleans
+### 6.13 Hashtables
+### 6.14 Enumerations
+
+## 7 Input and Output
+### 7.1 Transcoders
+### 7.2 Opening Files
+### 7.3 Standard Ports
+### 7.4 String and Bytevector Ports
+### 7.5 Opening Custom Ports
+### 7.6 Port Operations
+### 7.7 Input Operations
+### 7.8 Output Operations
+### 7.9 Convenience I/O
+### 7.10 Filesystem Operations
+### 7.11 Bytevector/String Conversions
+
+## 8 Syntactic Extension
+### 8.1 Keyword Bindings
+### 8.2 Syntax-Rules Transformers
+### 8.3 Syntax-Case Transformers
+### 8.4 Examples
+
+## 9 Records
+### 9.1 Defining Records
+### 9.2 Procedural Interface
+### 9.3 Inspection
+
+## 10 Libraries and Top-Level Programs
+### 10.1 Standard Libraries
+### 10.2 Defining New Libraries
+### 10.3 Top-Level Programs
+### 10.4 Examples
+
+## 11 Exceptions and Conditions
+### 11.1 Raising and Handling Exceptions
+### 11.2 Defining Condition Types
+### 11.3 Standard Condition Types
+
+## 12 Extended Examples
+### 12.1 Matrix and Vector Multiplication
+### 12.2 Sorting
+### 12.3 A Set Constructor
+### 12.4 Word Frequency Counting
+### 12.5 Scheme Printer
+### 12.6 Formatted Output
+### 12.7 A Meta-Circular Interpreter for Scheme
+### 12.8 Defining Abstract Objects
+### 12.9 Fast Fourier Transform
+### 12.10 A Unification Algorithm
+### 12.11 Multitasking with Engines  
+
+## Core Syntax
 
 ```
 <program>               --> <form>*

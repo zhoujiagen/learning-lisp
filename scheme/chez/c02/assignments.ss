@@ -1,6 +1,6 @@
 ;;; Assignments
 
-(load "lib/tests.ss")
+(load "../lib/tests.ss")
 
 ;;; root of ax^2 + bx + c = 0
 (define quadratic-formula

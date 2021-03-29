@@ -1,4 +1,4 @@
-(load "lib/config.ss")
+(load "../lib/config.ss")
 
 ;;; run tests
 ;;;

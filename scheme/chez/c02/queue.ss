@@ -4,7 +4,7 @@
 ;;; a list and a header
 ;;; header is pair: car point to the first pair of list, cdr point to the last pair of list
 
-(load "lib/tests.ss")
+(load "../lib/tests.ss")
 
 (define make-queue
     (lambda ()

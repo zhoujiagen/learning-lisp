@@ -1,4 +1,4 @@
-(load "lib/tests.ss")
+(load "../lib/tests.ss")
 
 (define abs
     (lambda (x)

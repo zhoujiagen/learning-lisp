@@ -1,6 +1,6 @@
 ;;; Stack
 
-(load "lib/tests.ss")
+(load "../lib/tests.ss")
 
 (define make-stack
     (lambda ()

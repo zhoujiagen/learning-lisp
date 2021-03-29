@@ -1,7 +1,7 @@
 ;;; Simple Recursion
 
-(load "lib/tests.ss")
-(load "lib/math.ss")
+(load "../lib/tests.ss")
+(load "abs.ss")
 
 (define length
     (lambda (lst)

@@ -1,6 +1,6 @@
 ;;; Definitions
 
-(load "lib/tests.ss")
+(load "../lib/tests.ss")
 
 ; (define var expr), if expr is a lambda expression:
 ; (1)

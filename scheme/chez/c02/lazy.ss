@@ -1,6 +1,6 @@
 ;;; thunk: zero-argument procedure
 
-(load "lib/tests.ss")
+(load "../lib/tests.ss")
 
 (define lazy
     ; t: thunk
@@ -10,7 +10,7 @@
             (lambda ()
                 (if (not flag)
                     (begin 
-                        (set! val (t))
+                        (set! val (t))  ; application of thunk
                         (set! flag #t)))
                 val))))
 

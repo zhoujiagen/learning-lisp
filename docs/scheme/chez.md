@@ -369,7 +369,157 @@ Trace:
 
 ## 3 Going Further
 ### 3.1 Syntactic Extension
+
+核心句法形式(core syntactic forms)包括:
+
+- 顶层`define`形式
+- 常量
+- 变量
+- 过程应用
+- `quote`表达式
+- `lambda`表达式
+- `if`表达式
+- `set!`表达式
+
+使用这些定义和表达式描述Scheme的核心语法:
+
+```
+; 程序
+<program>               --> <form>*
+; 形式
+<form>                  --> <definition> 
+                            | <expression>
+; 定义
+<definition>            --> <variable definition>
+                            | (begin <definition>*)
+; 变量定义
+<variable definition>   --> (define <variable> <expression>)
+; 表达式
+<expression>            --> <constant>
+                            | <variable>
+                            | (quote <datum>) ; datum: 任意Scheme对象
+                            | (lambda <formals> <expression> <expression>*)
+                            | (if <expression> <expression> <expression>)
+                            | (set! <variable> <expression>)
+                            | <application>
+; 常量
+<constant>              --> <boolean> | <number> | <character> | <string>
+; 参数
+<formals>               --> <variable>
+                            | (<variable>*)
+                            | (<variable> <variable>* . <variable>)
+; 过程应用
+<application>           --> (<expression> <expression>*)
+```
+
+其中:
+
+- `|`表示选择, `*`表示零次或多次出现;
+- `<variable>`是Scheme标识符;
+- `<dataum>`是任意Scheme对象, 例如数字、列表、符号或向量等;
+- `<boolean>`是`#t`或`#f`;
+- `<number>`是任意数字;
+- `<character>`是任意字符;
+- `<string>`是任意字符串;
+- `begin`表达式`(begin e1 e2 ...)`等价于`((lambda () e1 e2 ...))`.
+
+句法形式可以在预期表达式或定义出现的位置出现, 只要扩展的形式恰当的展开为表达式或定义.
+
+`define-syntax`定义句法扩展, 将句法转换过程(transformer)关联到一个关键字. 例:
+
+``` scheme
+(define-syntax let                          ; keyword
+  (syntax-rules ()                          ; transformer, auxiliary keywords
+    [(_ ((x e) ...) b1 b2 ...)              ; rules or pattern/template pairs
+     ((lambda (x ...) b1 b2 ...) e ...)]))
+```
+
 ### 3.2 More Recursion
+
+``` scheme
+(let ((var expr) ...) body1 body2 ...)
+(letrec ((var expr) ...) body1 body2 ...)
+(let name ((var expr) ...) body1 body2 ...) ; named let expression
+```
+
+- `let`: `var ...`只在`bodyi`中可见;
+- `letrec`: `var ...`在`bodyi`中可见, 在`expr ...`中可见; 必须能够在未求值任何`var ..`之前可以对每个`expr`求值;
+- 命名的`let`: `var ...`只在`bodyi`中可见, 在`bodyi`中`name`绑定到一个可以递归调用的过程, 等价于:
+
+``` scheme
+((letrec [(name (lambda (var ...) body1 body2 ...))]
+  name)
+  expr ...)
+
+(letrec [(name (lambda (var ...) body1 body2 ...))]
+  (name expr ...))
+```
+
+尾递归(tail recursion): 一个过程尾调用(tail-call)自身, 或者通过一系列尾调用间接调用自身.
+
+在`lambda`表达式中一个调用在尾部位置(in tail position): 调用的结果值作为`lambda`表达式的返回值返回.
+
+``` scheme
+; recursive version
+(define factorial
+  (lambda (n)
+    (let fact ([i n])
+      (if (= i 0)
+          1
+          (* i (fact (- i 1)))))))
+
+; trace
+|(fact 10)
+| (fact 9)
+| |(fact 8)
+| | (fact 7)
+| | |(fact 6)
+| | | (fact 5)
+| | | |(fact 4)
+| | | | (fact 3)
+| | | | |(fact 2)
+| | | | | (fact 1)
+| | | |[10](fact 0)
+| | | |[10]1
+| | | | | 1
+| | | | |2
+| | | | 6
+| | | |24
+| | | 120
+| | |720
+| | 5040
+| |40320
+| 362880
+|3628800
+```
+
+``` scheme
+; iterative version
+(define factorial
+  (lambda (n)
+    (let fact 
+      ([i n]  ; iter
+      [a 1])  ; acc
+      (if (= i 0)
+          a
+          (fact (- i 1) (* a i))))))
+
+; trace
+|(fact 10 1)
+|(fact 9 10)
+|(fact 8 90)
+|(fact 7 720)
+|(fact 6 5040)
+|(fact 5 30240)
+|(fact 4 151200)
+|(fact 3 604800)
+|(fact 2 1814400)
+|(fact 1 3628800)
+|(fact 0 3628800)
+|3628800
+```
+
+
 ### 3.3 Continuations
 ### 3.4 Continuation Passing Style
 ### 3.5 Internal Definitions
@@ -459,30 +609,7 @@ Trace:
 ### 12.10 A Unification Algorithm
 ### 12.11 Multitasking with Engines  
 
-## Core Syntax
 
-```
-<program>               --> <form>*
-<form>                  --> <definition> | <expression>
-<definition>            --> <variable definition>
-                            | (begin <definition>*)
-; 变量定义
-<variable definition>   --> (define <variable> <expression>)
-<expression>            --> <constant>
-                            | <variable> ; 标识符
-                            | (quote <datum>) ; datum: 任意Scheme对象
-                            | (lambda <formals> <expression> <expression>*)
-                            | (if <expression> <expression> <expression>)
-                            | (set! <variable> <expression>)
-                            | <application>
-<constant>              --> <boolean> | <number> | <character> | <string>
-; 参数
-<formals>               --> <variable>
-                            | (<variable>*)
-                            | (<variable> <variable>* . <variable>)
-; 过程应用
-<application>           --> (<expression> <expression>*)
-```
 
 ## 句法扩展(Syntactic Extension)
 

@@ -1,4 +1,4 @@
-(load "lib/tests.ss")
+(load "../lib/tests.ss")
 
 ; ERROR: Exception: variable sum is not bound
 ; (let ([sum (lambda (lst)
@@ -73,15 +73,15 @@
 ;;; recursive version(-r) v.s. iteration version(-i)
 
 (define (factorial-r n)
-    (let fact ([i n])
-    ;(trace-let fact ([i n])
+    ;(let fact ([i n])
+    (trace-let fact ([i n])
         (if (= i 0)
             1
             (* i (fact (- i 1))))))
 
 (define (factorial-i n)
-    (let fact ([i n] [acc 1])
-    ;(trace-let fact ([i n] [acc 1])
+    ;(let fact ([i n] [acc 1])
+    (trace-let fact ([i n] [acc 1])
         (if (= i 0)
             acc
             (fact (- i 1) (* i acc)))))

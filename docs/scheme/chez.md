@@ -1,7 +1,5 @@
 # Chez Scheme
 
-> R. Kent Dybvig. The Scheme Programming Language. The MIT Press, 2009.
-
 |#|Title|Progress|Description|
 |:---|:---|:---|:---|
 |1|Introduction|100%|20210327|
@@ -16,6 +14,121 @@
 |10|Libraries and Top-Level Programs|||
 |11|Exceptions and Conditions|||
 |12|Extended Examples|||
+
+## 术语
+
+<!-- 记录阅读过程中出现的关键字及其简单的解释. -->
+
+## 介绍
+
+<!-- 描述书籍阐述观点的来源、拟解决的关键性问题和采用的方法论等. -->
+
+## 动机
+
+<!-- 描述阅读书籍的动机, 要达到什么目的等. -->
+
+## 概念结构
+
+<!-- 描述书籍的行文结构, 核心主题和子主题的内容结构和关系. -->
+
+<div>
+{% dot tspl.svg
+digraph tspl {
+    rankdir=LR;
+    splines=spline
+
+    node [shape=tab, width=1, height=0.1];
+    edge [];
+    
+    root [style=invis]
+    
+    c1 [label="Introduction"];
+    c1_concepts [shape=record, label="
+    naming convention\l
+    | notation convention\l
+    "]
+    c1 -> c1_concepts;
+    
+    c2 [label="Getting Started"];
+    c2_concepts [shape=record, label="
+    REPL\l
+    | define\l
+    | load\l
+    | (procedure arg...)\l
+    | quote\l
+    | car, cdr, cons, proper list\l
+    | evaluation expressions\l
+    | let\l
+    | lambda\l
+    | if, or, and, not, cond\l
+    | simple recursion, map, trace\l
+    | assignment: set!, set-car!, set-cdr!\l
+    "]
+    c2 -> c2_concepts;
+    
+    c3 [label="Going Further"];
+    c3_concepts [shape=record, label="
+    <ss> syntactic extension\l
+    | more recursion: letrec, named let, tail recursion\l
+    |<cont> continutation\l
+    | internal definition\l
+    | library\l
+    "]
+    c3 -> c3_concepts;
+    
+    syntactic_extension [shape=record, label="
+    core syntactic form\l
+    | form, definition, expression, application\l
+    | begin\l
+    | define-syntax, syntax-rules\l
+    "]
+    c3_concepts:ss -> syntactic_extension;
+    
+    continuations [shape=record, label="
+    continuation passing styles\l
+    "]
+    c3_concepts:cont -> continuations;
+    
+    
+    c4 [label="Procedures and Variable Bindings"];
+    c5 [label="Control Operations"];
+    c6 [label="Operations on Objects"];
+    c7 [label="Input and Output"];
+
+    c8 [label="Syntactic Extension"];
+    c8_concepts [shape=record, label="
+    keyword - transformer: define-syntax, let-syntax, letrec-syntax\l
+    | <transfomers> transfomer\l
+    | <expanders> expander\l
+    "]    
+    c8 -> c8_concepts;
+    
+    transfomers [shape=record, label="
+    syntax-rules\l
+    | syntax-case, syntax\l
+    | identifier-syntax, make-variable-transformer
+    "]
+    c8_concepts:transfomers -> transfomers;
+    
+    expanders [shape=record, label="
+    left to right\l
+    | variable definition\l
+    | keyword definition\l
+    | expression\l
+    "]
+    c8_concepts:expanders -> expanders;
+
+    c9 [label="Records"];
+    c10 [label="Libraries and Top-Level Programs"];
+    c11 [label="Exceptions and Conditions"];
+    c12 [label="Extended Examples"];
+    
+    
+    root -> {c1 c2 c3 c4 c5 c6 c7 c8 c9 c10 c11 c12} [style=invis]
+
+}
+%}
+</div>
 
 ## 1 Introduction   
 
@@ -519,9 +632,80 @@ Trace:
 |3628800
 ```
 
-
 ### 3.3 Continuations
+
+求值表达式时需要关注的事情:
+
+- 求值什么(what to evaluate);
+- 使用这个值做什么(what to do with the value): 称为计算的延续(the continuation of a computation).
+
+在表达式求值的过程中任意时间点, 存在continuation准备好完成, 或者至少可以继续从该时间点开始的计算.
+
+例: 求值`(if (null? x) (quote ()) (cdr x))`, continuation等待
+
+- `(if (null? x) (quote ()) (cdr x))`的值;
+- `(null? x)`的值;
+- `null?`的值;
+- `x`的值;
+- `(cdr x)`的值: 与整个表达式相同;
+- `cdr`的值;
+- `x`的值.
+
+过程`call/cc`:
+
+- 使用`call/cc`捕获任意表达式的continuation;
+- `call/cc`的参数是一个过程`p`;
+- `call/cc`构造出当前continuation的具体表示, 并传递给`p`; 这个continuation本身被表示为过程`k`;
+- 每次`k`应用到一个值时, 返回该值到`call/cc`应用的continuation; 这个值成为`call/cc`应用的值;
+- 如果`p`在没有调用`k`的情况下返回, 返回的值成为`call/cc`应用的值.
+
+
+> Example: non-local exit
+
+``` scheme
+(define (product lst)
+    (call/cc 
+        (lambda (break)
+            (let f ([lst lst])
+                (cond
+                    [(null? lst) 1]
+                    [(= (car lst) 0) (break 0)] ; invoke continuation
+                    [else (* (car lst) (f (cdr lst)))]))))) 
+```
+
+> Example: puzzling examples
+
+``` scheme
+(let ([x (call/cc (lambda (k) k))])
+  (x (lambda (ignore) "hi")))
+(((call/cc (lambda (k) k)) (lambda (x) x)) "hi")
+```
+
 ### 3.4 Continuation Passing Style
+
+通常, 每个过程调用都会关联一个continuation:
+
+- 非尾部调用: 被调用过程接收一个隐式的continuation, 该continuation负责完成调用过程体和返回到调用过程的continutation.
+- 尾部调用: 被调用的过程接收调用过程的continuation.
+
+传递continuation风格(CPS): 将过程调用中的隐式continuation以参数形式表示.
+
+> Example: CPS
+
+``` scheme
+(letrec ([f (lambda (x) (cons 'a x))]
+        [g (lambda (x) (cons 'b (f x)))]
+        [h (lambda (x) (g (cons 'c x)))])
+    (displayln (cons 'd (h '())))) ; (d b a c)
+
+(letrec ([f (lambda (x k) (k (cons 'a x)))]
+        [g (lambda (x k)
+            (f x (lambda (v) (k (cons 'b v)))))]
+        [h (lambda (x k) (g (cons 'c x) k))])
+    (displayln (h '() (lambda (v) (cons 'd v))))) ; (d b a c)
+```
+
+
 ### 3.5 Internal Definitions
 ### 3.6 Libraries
 
@@ -575,45 +759,8 @@ Trace:
 ### 7.11 Bytevector/String Conversions
 
 ## 8 Syntactic Extension
-### 8.1 Keyword Bindings
-### 8.2 Syntax-Rules Transformers
-### 8.3 Syntax-Case Transformers
-### 8.4 Examples
 
-## 9 Records
-### 9.1 Defining Records
-### 9.2 Procedural Interface
-### 9.3 Inspection
-
-## 10 Libraries and Top-Level Programs
-### 10.1 Standard Libraries
-### 10.2 Defining New Libraries
-### 10.3 Top-Level Programs
-### 10.4 Examples
-
-## 11 Exceptions and Conditions
-### 11.1 Raising and Handling Exceptions
-### 11.2 Defining Condition Types
-### 11.3 Standard Condition Types
-
-## 12 Extended Examples
-### 12.1 Matrix and Vector Multiplication
-### 12.2 Sorting
-### 12.3 A Set Constructor
-### 12.4 Word Frequency Counting
-### 12.5 Scheme Printer
-### 12.6 Formatted Output
-### 12.7 A Meta-Circular Interpreter for Scheme
-### 12.8 Defining Abstract Objects
-### 12.9 Fast Fourier Transform
-### 12.10 A Unification Algorithm
-### 12.11 Multitasking with Engines  
-
-
-
-## 句法扩展(Syntactic Extension)
-
-### 形式
+**形式**
 
 ```
 (keyword subform ...) | improper list | singleton identifier
@@ -623,7 +770,7 @@ Trace:
 - 用关键字与转换过程(transformer)的关联来定义: `define-syntax`、`let-syntax`、`letrec-syntax`.
 - 由语法展开器(syntax expander)在求值开始时(在编译或解释之前), 展开为核心形式.
 
-### 创建transformer
+**创建transformer**
 
 (1) `syntax-rules`: 简单的基于模式的转换
 
@@ -637,7 +784,7 @@ Trace:
 - `identifier-syntax`形式: 使用类似与`syntax-rules`中的简单模式.
 - `make-variable-transformer`过程: 执行任意计算.
 
-### 展开器
+**展开器**
 
 展开器从左向右处理`library`、`lambda`或其他体中的初始化形式. 遇到:
 
@@ -645,7 +792,9 @@ Trace:
 - 关键字定义: 展开并求值右侧的表达式, 将关键字绑定到结果transformer.
 - 表达式: 完全展开所有延迟的右侧表达式、当前和剩下的体表达式.
 
-### 关键字绑定
+
+### 8.1 Keyword Bindings
+
 
 (1) `define-syntax`
 
@@ -666,7 +815,8 @@ Trace:
 - `keyword`均在`form1` `form2` `...`中绑定, 在`letrec-syntax`中的`expr`中绑定.
 
 
-### 语法规则的transformer: `syntax-rules`
+### 8.2 Syntax-Rules Transformers
+
 
 ``` scheme
 (syntax-rules (literal ...) clause ...)
@@ -729,7 +879,7 @@ _
 - `(identifier-syntax (id1 tmpl1) ((set! id2 e2) tmpl2))`则允许transformer指定使用`set!`时的操作.
 
 
-### 语法案例的transformer: `syntax-case`、`syntax`
+### 8.3 Syntax-Case Transformers
 
 
 `syntax-case`是`syntax-rules`的泛化版本.
@@ -852,7 +1002,9 @@ _
 `list`可以是任意列表, 它的内容不重要. 生成的临时标识符的数量与`list`中元素数量相同, 每个临时标识符互不相同.
 
 
-## 记录类型(Record Types)
+### 8.4 Examples
+
+## 9 Records
 
 > TODO(zhoujiagen) restart here! 2021-03-17
 
@@ -897,3 +1049,52 @@ field-name
 - Opaque clause
 
 - Parent-rtd clause
+
+
+### 9.1 Defining Records
+### 9.2 Procedural Interface
+### 9.3 Inspection
+
+## 10 Libraries and Top-Level Programs
+### 10.1 Standard Libraries
+### 10.2 Defining New Libraries
+### 10.3 Top-Level Programs
+### 10.4 Examples
+
+## 11 Exceptions and Conditions
+### 11.1 Raising and Handling Exceptions
+### 11.2 Defining Condition Types
+### 11.3 Standard Condition Types
+
+## 12 Extended Examples
+### 12.1 Matrix and Vector Multiplication
+### 12.2 Sorting
+### 12.3 A Set Constructor
+### 12.4 Word Frequency Counting
+### 12.5 Scheme Printer
+### 12.6 Formatted Output
+### 12.7 A Meta-Circular Interpreter for Scheme
+### 12.8 Defining Abstract Objects
+### 12.9 Fast Fourier Transform
+### 12.10 A Unification Algorithm
+### 12.11 Multitasking with Engines  
+
+
+
+
+
+## 总结
+
+<!-- 概要记录书籍中如何解决关键性问题的. -->
+
+## 应用
+
+<!-- 记录如何使用书籍中方法论解决你自己的问题. -->
+
+## 文献引用
+
+<!-- 记录相关的和进一步阅读资料: 文献、网页链接等. -->
+
+R. Kent Dybvig. The Scheme Programming Language. The MIT Press, 2009.
+
+## 其他备注

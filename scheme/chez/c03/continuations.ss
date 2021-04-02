@@ -1,16 +1,6 @@
-;;; Continuation
-;;; keep track things when expression evaluation:
-;;; (1) what to evaluate
-;;; (2) what to do with the value - the continuation of a computation
-
-(load "lib/tests.ss")
+(load "../lib/tests.ss")
 
 ; call/cc
-; must be passed a procedure p of 1 argument
-; construct a concrete representation of the current continuation and pass it to p as k
-; (the current continuation is represented by procedure k)
-; (1) each time k is applied to a value, it return the value to the continuation of the call/cc application
-; (2) if p returns without invoking k, the value returned by the procedure p becomes the value of application of call/cc
 (let ([p (lambda (k) (* 5 4))]
     [p2 (lambda (k) (* 5 (k 4)))])
     (run-test call/cc p)

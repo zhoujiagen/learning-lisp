@@ -43,6 +43,7 @@ nav:
         - '图片索引': common-lisp/HyperSpec/Figures-index.md
     - Scheme:
       - 'Index': scheme/scheme.md
+      - 'Chez Scheme Concepts': scheme/chez-concepts.md
       - 'Chez Scheme': scheme/chez.md
 
 

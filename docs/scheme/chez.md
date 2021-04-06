@@ -4,7 +4,7 @@
 |:---|:---|:---|:---|
 |1|Introduction|100%|20210327|
 |2|Getting Started|100%|20210328|
-|3|Going Further|||
+|3|Going Further|100%|20210401|
 |4|Procedures and Variable Bindings|||
 |5|Control Operations|||
 |6|Operations on Objects|||
@@ -31,104 +31,7 @@
 
 <!-- 描述书籍的行文结构, 核心主题和子主题的内容结构和关系. -->
 
-<div>
-{% dot tspl.svg
-digraph tspl {
-    rankdir=LR;
-    splines=spline
-
-    node [shape=tab, width=1, height=0.1];
-    edge [];
-    
-    root [style=invis]
-    
-    c1 [label="Introduction"];
-    c1_concepts [shape=record, label="
-    naming convention\l
-    | notation convention\l
-    "]
-    c1 -> c1_concepts;
-    
-    c2 [label="Getting Started"];
-    c2_concepts [shape=record, label="
-    REPL\l
-    | define\l
-    | load\l
-    | (procedure arg...)\l
-    | quote\l
-    | car, cdr, cons, proper list\l
-    | evaluation expressions\l
-    | let\l
-    | lambda\l
-    | if, or, and, not, cond\l
-    | simple recursion, map, trace\l
-    | assignment: set!, set-car!, set-cdr!\l
-    "]
-    c2 -> c2_concepts;
-    
-    c3 [label="Going Further"];
-    c3_concepts [shape=record, label="
-    <ss> syntactic extension\l
-    | more recursion: letrec, named let, tail recursion\l
-    |<cont> continutation\l
-    | internal definition\l
-    | library\l
-    "]
-    c3 -> c3_concepts;
-    
-    syntactic_extension [shape=record, label="
-    core syntactic form\l
-    | form, definition, expression, application\l
-    | begin\l
-    | define-syntax, syntax-rules\l
-    "]
-    c3_concepts:ss -> syntactic_extension;
-    
-    continuations [shape=record, label="
-    continuation passing styles\l
-    "]
-    c3_concepts:cont -> continuations;
-    
-    
-    c4 [label="Procedures and Variable Bindings"];
-    c5 [label="Control Operations"];
-    c6 [label="Operations on Objects"];
-    c7 [label="Input and Output"];
-
-    c8 [label="Syntactic Extension"];
-    c8_concepts [shape=record, label="
-    keyword - transformer: define-syntax, let-syntax, letrec-syntax\l
-    | <transfomers> transfomer\l
-    | <expanders> expander\l
-    "]    
-    c8 -> c8_concepts;
-    
-    transfomers [shape=record, label="
-    syntax-rules\l
-    | syntax-case, syntax\l
-    | identifier-syntax, make-variable-transformer
-    "]
-    c8_concepts:transfomers -> transfomers;
-    
-    expanders [shape=record, label="
-    left to right\l
-    | variable definition\l
-    | keyword definition\l
-    | expression\l
-    "]
-    c8_concepts:expanders -> expanders;
-
-    c9 [label="Records"];
-    c10 [label="Libraries and Top-Level Programs"];
-    c11 [label="Exceptions and Conditions"];
-    c12 [label="Extended Examples"];
-    
-    
-    root -> {c1 c2 c3 c4 c5 c6 c7 c8 c9 c10 c11 c12} [style=invis]
-
-}
-%}
-</div>
+见[Concepts in 'The Scheme Programming Language'](chez-concepts.md).
 
 ## 1 Introduction   
 
@@ -547,6 +450,8 @@ Trace:
      ((lambda (x ...) b1 b2 ...) e ...)]))
 ```
 
+`let*`: 与`let`类似, 但按顺序求值绑定, 之前的绑定在后续的绑定表达式中可见.
+
 ### 3.2 More Recursion
 
 ``` scheme
@@ -705,9 +610,58 @@ Trace:
     (displayln (h '() (lambda (v) (cons 'd v))))) ; (d b a c)
 ```
 
-
 ### 3.5 Internal Definitions
+
+内部定义: 定义可以出现在`lambda`、`let`或`letrec`的体中, 创建的绑定的作用域在出现的体中.
+
+使用内部定义创建的绑定可以是互递归的(mutually recursive).
+
+下面的形式或表达式等价:
+
+``` scheme
+; 体
+(define var expr0)
+...
+expr1
+expr2
+...
+
+(letrec* ((var expr0) ...) expr1 expr2 ...)
+
+(let ()
+  (define var expr0)
+  ...
+  expr1
+  expr2
+  ...)
+```
+
+`letrec*`: 类似与`lect*`, 要求从左向右的求值顺序.
+
+`case`表达式: 
+
+``` scheme
+(case <key> <case clause1> <case clause2> ...)    ; syntax 
+; <Key> must be an expression. 
+; Each <case clause> must have one of the following forms:
+((<datum1> ...) <expression1> <expression2> ...)
+(else <expression1> <expression2> ...)
+```
+
 ### 3.6 Libraries
+
+> Example: grade library
+
+``` scheme
+(library (grades)
+  (export gpa->grade gpa)
+  (import (rnrs))
+  (define gpa->grade ...)
+  (define-syntax gpa ...))
+
+(import (grades))
+(gpa ...)
+```
 
 ## 4 Procedures and Variable Bindings
 ### 4.1 Variable References

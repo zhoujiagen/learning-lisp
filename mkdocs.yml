@@ -43,8 +43,20 @@ nav:
         - '图片索引': common-lisp/HyperSpec/Figures-index.md
     - Scheme:
       - 'Index': scheme/scheme.md
-      - 'Chez Scheme Concepts': scheme/chez-concepts.md
-      - 'Chez Scheme': scheme/chez.md
+      - 'Chez Scheme':
+          - 'Home': scheme/chez.md
+          - '1 Introduction': scheme/chez-01-introduction.md
+          - '2 Getting Started': scheme/chez-02-getting-started.md
+          - '3 Going Further': scheme/chez-03-going-further.md
+          - '4 Procedures and Variable Bindings': scheme/chez-04-procedures-and-variable-bindings.md
+          - '5 Control Operations': scheme/chez-05-control-operation.md
+          - '6 Operations on Objects': scheme/chez-06-operations-on-objects.md
+          - '7 Input and Output': scheme/chez-07-input-and-output.md
+          - '8 Syntactic Extension': scheme/chez-08-syntactic-extension.md
+          - '9 Records': scheme/chez-09-records.md
+          - '10 Libraries and Top-Level Programs': scheme/chez-10-library-and-toplevel-programs.md
+          - '11 Exceptions and Conditions': scheme/chez-11-exception-and-condition.md
+          - '12 Extended Examples': scheme/chez-12-extended-examples.md 
 
 
 #theme: readthedocs
@@ -71,6 +83,11 @@ markdown_extensions:
   - pymdownx.mark
   - pymdownx.smartsymbols
   - pymdownx.superfences
+  - pymdownx.highlight:
+      linenums: true
+  - pymdownx.snippets:
+      base_path: docs
+      check_paths: true  
   - pymdownx.tasklist:
       custom_checkbox: true
   - pymdownx.tilde

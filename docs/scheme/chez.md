@@ -39,7 +39,7 @@
 {% dot tspl.svg
 digraph tspl {
     rankdir=LR;
-    splines=spline
+    splines=polyline
 
     node [shape=tab, width=1, height=0.1];
     edge [];
@@ -119,14 +119,14 @@ digraph tspl {
 {% dot tspl.svg
 digraph tspl {
     rankdir=LR;
-    splines=spline
+    splines=polyline
 
     node [shape=tab, width=1, height=0.1];
     edge [];
     
-    root [style=invis]
+    #root [style=invis]
 
-    c4 [label="Procedures and Variable Bindings"];
+    #c4 [label="Procedures and Variable Bindings"];
     c4_concepts [shape=record, label="
     variable reference\l
     | <c4_lambdas> lambda
@@ -135,7 +135,7 @@ digraph tspl {
     | <c4_variable_definition> variable definition\l
     | <c4_assignments> assignment\l
     "]
-    c4 -> c4_concepts;
+    #c4 -> c4_concepts;
 
     c4_lambdas [shape=record, label="
     (lambda formals body1 body2 ...)\l
@@ -155,6 +155,7 @@ digraph tspl {
     c4_multiple_values [shape=record, label="
     (let-values ((formals expr) ...) body1 body2 ...)\l
     | (let*-values ((formals expr) ...) body1 body2 ...)\l
+    | values\l
     "]
     c4_concepts:c4_multiple_values -> c4_multiple_values;
 
@@ -172,7 +173,7 @@ digraph tspl {
     "]
     c4_concepts:c4_assignments -> c4_assignments;
  
-    root -> {c4} [style=invis]
+    #root -> {c4} [style=invis]
 }
 %}
 </div>
@@ -183,14 +184,14 @@ digraph tspl {
 {% dot tspl.svg
 digraph tspl {
     rankdir=LR;
-    splines=spline
+    splines=polyline
 
     node [shape=tab, width=1, height=0.1];
     edge [];
     
-    root [style=invis]
+    #root [style=invis]
     
-    c5 [label="Control Operations"];
+    #c5 [label="Control Operations"];
     c5_concepts [shape=record, label="
     <c5_procedure_application> procedure application\l
     | <c5_sequencing> sequencing\l
@@ -202,7 +203,7 @@ digraph tspl {
     | <c5_multiple_values> multiple values\l
     | <c5_eval> eval\l
     "]
-    c5 -> c5_concepts;
+    #c5 -> c5_concepts;
 
     c5_procedure_application [shape=record, label="
     (expr0 expr1 ...)\l
@@ -279,26 +280,344 @@ digraph tspl {
     "]
     c5_concepts:c5_eval -> c5_eval;
 
-    root -> {c5} [style=invis]
+    #root -> {c5} [style=invis]
 }
 %}
 </div>
 
 - 6 Operations on Objects
 
+Constants and Quotation:
+
 <div>
 {% dot tspl.svg
 digraph tspl {
     rankdir=LR;
-    splines=spline
+    splines=polyline
+
+    node [shape=tab, width=1, height=0.1];
+    edge [];
+
+    c6_concepts1 [shape=record, label="
+        <c6_constants> constant\l
+        | <c6_quotations> quotation\l
+        "]
+    
+        c6_constants [shape=record, label="
+        number, boolean, character, string, bytevector\l
+        | immutable\l
+        "]
+        c6_concepts1:c6_constants -> c6_constants;
+    
+        c6_quotations [shape=record, label="
+        quote\l
+        | quasiquote\l
+        | unquote\l
+        | unquote-splicing\l
+        "]
+        c6_concepts1:c6_quotations -> c6_quotations;
+
+}
+%}
+</div>  
+
+Generic Equivalence and Type Predicates:
+
+<div>
+{% dot tspl.svg
+digraph tspl {
+    rankdir=LR;
+    splines=polyline
+
+    node [shape=tab, width=1, height=0.1];
+    edge [];
+
+    c6_concepts2 [shape=record, label="
+        <c6_generic_equivalence> generic equivalence\l
+        | <c6_type_predicates> type predicate\l
+        "]
+    
+        c6_generic_equivalence [shape=record, label="
+        eq?\l
+        | eqv?\l
+        | equal?\l
+        "]
+        c6_concepts2:c6_generic_equivalence -> c6_generic_equivalence;
+    
+        c6_type_predicates [shape=record, label="
+        boolean?\l
+        | null?\l
+        | pair?\l
+        | number?, complex?, real?, rational?, integer?\l
+        | real-values?, rational-valued?, integer-valued?\l
+        | char?\l
+        | string?\l
+        | vector?\l
+        | symbol?\l
+        | procedure?\l
+        | bytevector?\l
+        | hashtable?\l
+        "]
+        c6_concepts2:c6_type_predicates -> c6_type_predicates;
+}
+%}
+</div>
+
+Lists and Pairs:
+
+<div>
+{% dot tspl.svg
+digraph tspl {
+    rankdir=LR;
+    splines=polyline
+
+    node [shape=tab, width=1, height=0.1];
+    edge [];
+
+    c6_concepts3 [shape=record, label="
+        <c6_list_pair> list, pair\l
+        "]
+    
+        c6_list_pair [shape=record, label="
+        {cons | car | cdr | set-car! | set-cdr!}
+        | {caar | cadr | ... | cddddr}
+        | {list | cons* | list? | length | list-ref | list-tail | append | reverse}
+        | {memq, memv, member | memp}
+        | {remq, remv, remove | remp}
+        | filter\l
+        | partition\l
+        | find\l
+        | {assq | assv | assoc |assp}
+        | list-sort\l
+        "]
+        c6_concepts3:c6_list_pair -> c6_list_pair; 
+}
+%}
+</div> 
+
+Numbers:
+
+<div>
+{% dot tspl.svg
+digraph tspl {
+    rankdir=LR;
+    splines=polyline
+
+    node [shape=tab, width=1, height=0.1];
+    edge [];
+        
+    c6_numbers [shape=record, label="
+    {exact? | inexact? | exact | inexact | exact-\>inexact | inexact-\>exact}
+    | {= | \< | \> | \<= | \>=}
+    | {+ | - | * | /}
+    | {zero? | positive? | negative? | even? | odd?}
+    | {finite? | infinite? | nan?}
+    | {quotient | remainder | modulo}
+    | {div | mod | div-and-mod | div0 | mod0 | div0-and-mod0}
+    | {truncate | floor | ceiling | round}
+    | {abs | max | min | gcd | lcm | expt | sqrt | exact-integer-sqrt}
+    | {exp | log | sin | cos | tan | asin | acos | atan}
+    | {rationalize | numerator | denominator}
+    | {real-part | imag-part | make-rectangular | make-polar | angle | magnitude}
+    | <c6_numbers_bitwise> bitwise procedures\l
+    | {string-\>number | number-\>string}
+    "]
+
+    c6_numbers_bitwise [shape=record, label="
+    {bitwise-not | bitwise-and | bitwise-ior | bitwise-xor }
+    | bitwise-if\l
+    | bitwise-bit-count\l
+    | bitwise-length\l
+    | bitwise-first-bit-set\l
+    | bitwise-bit-set?\l
+    | bitwise-copy-bit\l
+    | bitwise-bit-field\l
+    | bitwise-copy-bit-field\l
+    | bitwise-arithmetic-shift-right\l
+    | bitwise-arithmetic-shift-left\l
+    | bitwise-arithmetic-shift\l
+    | bitwise-rotate-bit-field\l
+    | bitwise-reverse-bit-field\l
+    "]
+    c6_numbers:c6_numbers_bitwise -> c6_numbers_bitwise;
+}
+%}
+</div>
+
+Fixnums:
+
+<div>
+{% dot tspl.svg
+digraph tspl {
+    rankdir=LR;
+    splines=polyline
+
+    node [shape=tab, width=1, height=0.1];
+    edge [];
+
+    c6_fixnums [shape=record, label="
+    {fixnum? | least-fixnum | greatest-fixnum | fixnum-width}
+    | {fx=? | fx\<? | fx\>? | fx\<=? | fx\>? }
+    | {fxzero? | fxpositive? | fxnegative?}
+    | {fxeven? | fxodd?}
+    | {fxmin | fxmax}
+    | {fx- | fx*}
+    | {fxdiv | fxmod | fxdiv-and-mod | fxdiv0 | fxmod0 | fxdiv0-and-mod0}
+    | {fx+/carry | fx-/carry | fx*/carry}
+    | {fxnot | fxand | fxior | fxxor}
+    | {fxif | fxbit-count | fxlength}
+    | {fxfirst-bit-set | fxbit-set? | fxcopy-bit | fxbit-field | fxcopy-bit-field}
+    | {fxarithmetic-shift-right | fxarithmetic-shift-left | fxarithmetic-shift}
+    | {fxrotate-bit-field | fxreverse-bit-field}
+    "]
+}
+%}
+</div>
+
+Flonums:
+
+<div>
+{% dot tspl.svg
+digraph tspl {
+    rankdir=LR;
+    splines=polyline
+
+    node [shape=tab, width=1, height=0.1];
+    edge [];
+
+    c6_flonums [shape=record, label="
+        flonum?\l
+        | {fl=? | fl\<? | fl\>? | fl\<=? | fl\>=?}
+        | {flzero? | flpositive? | flnegative?}
+        | {flfinite? | flinfinite? | flnan?}
+        | {fleven? | flodd? | flmin | flmax}
+        | {fl+ | fl- | fl* | fl/}
+        | {fldiv | flmod | fldiv-and-mod | fldiv0 | flmod0 | fldiv0-and-mod0}
+        | {flround | fltruncate | flfloor | flceiling}
+        | {flnumerator | fldenominator}
+        | {flabs | flexp | fllog | flsin | flcos | fltan | flasin | flacos | flatan | flsqrt | flexpt}
+        | {fixnum-\>flonum | real-\>flonum}
+        "]
+}
+%}
+</div>
+
+Characters
+Strings
+Vectors
+Bytevectors
+Symbols
+Booleans
+Hashtables
+Enumerations
+
+<div>
+{% dot tspl.svg
+digraph tspl {
+    rankdir=LR;
+    splines=polyline
 
     node [shape=tab, width=1, height=0.1];
     edge [];
     
-    root [style=invis]
-    c6 [label="Operations on Objects"];
+    c6_concepts4 [shape=record, label="
+    <c6_characters> character\l
+    | <c6_strings> string\l
+    | <c6_vectors> vector\l
+    | <c6_bytevectors> bytevector\l
+    | <c6_symbols> symbol\l
+    | <c6_booleans> boolean\l
+    | <c6_hashtables> hashtable\l
+    | <c6_enumerations> enumeration\l
+    "]
+
+    c6_characters [shape=record, label="
+    {char=? | char\<? | char\>? | char\<=? | char\>?}
+    | {char-ci=? | char-ci\<? | char-ci\>? | char-ci\<=? | char-ci\>?}
+    | {char-alphabetic? | char-numeric? | char-whitespace?}
+    | {char-lower-case? | char-upper-case? | char-title-case?}
+    | {char-general-category | char-upcase | char-downcase | char-titlecase | char-foldcase}
+    | {char-\>integer | integer-\>char}
+    "]
+    c6_concepts4:c6_characters -> c6_characters; 
     
-    root -> {c6} [style=invis]
+    c6_strings [shape=record, label="
+    {string=? | string\<? | string\>? | string\<=? | string\>?}
+    | {string-ci=? | string-ci\<? | string-ci\>? | string-ci\<=? | string-ci\>?}
+    | {string | make-string | string-length | string-ref | string-set!}
+    | {string-copy | string-append | substring | string-fill!}
+    | {string-upcase | string-downcase | string-foldcase |string-titlecase}
+    | {string-normalize-nfd | string-normalize-nfkd | string-normalize-nfc | string-normalize-nfkc}
+    | {string-\>list | list-\>string}
+    "]
+    c6_concepts4:c6_strings -> c6_strings; 
+    
+    c6_vectors [shape=record, label="
+    {vector | make-vector}
+    | {vector-length | vector-ref | vector-set! | vector-fill!}
+    | {vector-\>list | list-\>vector}
+    | {vector-sort | vector-sort!}
+    "]
+    c6_concepts4:c6_vectors -> c6_vectors; 
+    
+    c6_bytevectors [shape=record, label="
+    {endianness | native-endianness}
+    | make-bytevector\l
+    | bytevector-length\l
+    | bytevector=?\l
+    | {bytevector-fill! | bytevector-copy | bytevector-copy!}
+    | {bytevector-u8-ref | bytevector-s8-ref | bytevector-u8-set! | bytevector-s8-set!}
+    | {bytevector-\>u8-list | u8-list-\>bytevector}
+    | bytevector-xxx-native-ref: u16, s16, u32, s32, u64, s64\l
+    | bytevector-xxx-native-set!: u16, s16, u32, s32, u64, s64\l
+    | bytevector-xxx-ref: u16, s16, u32, s32, u64, s64\l
+    | bytevector-xxx-set!: u16, s16, u32, s32, u64, s64\l
+    | {bytevector-uint-ref | bytevector-sint-ref}
+    | {bytevector-uint-set! | bytevector-sint-set!}
+    | {bytevector-\>uint-list | bytevector-\>sint-list}
+    | {uint-list-\>bytevector | sint-list-\>bytevector}
+    | bytevector-ieee-xxx-native-ref: single , double\l
+    | bytevector-ieee-xxx-native-set!: single , double\l
+    | bytevector-ieee-xxx-ref: single , double\l
+    | bytevector-ieee-xxx-set!: single , double\l
+    "]
+    c6_concepts4:c6_bytevectors -> c6_bytevectors; 
+    
+    c6_symbols [shape=record, label="
+    symbol=?\l
+    | {string-\>symbol | symbol-\>string}
+    "]
+    c6_concepts4:c6_symbols -> c6_symbols; 
+    
+    c6_booleans [shape=record, label="
+    boolean=?\l
+    "]
+    c6_concepts4:c6_booleans -> c6_booleans; 
+    
+    c6_hashtables [shape=record, label="
+    make-eq-hashtable\l
+    | make-eqv-hashtable\l
+    | make-hashtable\l
+    | hashtable-mutable?\l
+    | hashtable-hash-function\l
+    | hashtable-equivalence-function\l
+    | {equal-hash | string-hash | string-ci-hash | symbol-hash}
+    | {hashtable-set! | hashtable-ref | hashtable-contains | hashtable-update! | hashtable-delete!}
+    | {hashtable-size | hashtable-copy | hashtable-clear!}
+    | {hashtable-keys | hashtable-entries}
+    "]
+    c6_concepts4:c6_hashtables -> c6_hashtables; 
+    
+    c6_enumerations [shape=record, label="
+    define-enumeration\l
+    | make-enumeration\l
+    | {enum-set-constructor | enum-set-universe}
+	| enum-set-\>list\l
+	| {enum-set-subset? | enum-set=?}
+	| {enum-set-member? | enum-set-union | enum-set-intersection | enum-set-difference | enum-set-complement}
+	| {enum-set-projection | enum-set-indexer}
+    "]
+    c6_concepts4:c6_enumerations -> c6_enumerations; 
 }
 %}
 </div>
@@ -310,7 +629,7 @@ digraph tspl {
 {% dot tspl.svg
 digraph tspl {
     rankdir=LR;
-    splines=spline
+    splines=polyline
 
     node [shape=tab, width=1, height=0.1];
     edge [];
@@ -330,21 +649,28 @@ digraph tspl {
 {% dot tspl.svg
 digraph tspl {
     rankdir=LR;
-    splines=spline
+    splines=polyline
 
     node [shape=tab, width=1, height=0.1];
     edge [];
     
-    root [style=invis]
+    #root [style=invis]
     
-    c8 [label="Syntactic Extension"];
+    #c8 [label="Syntactic Extension"];
     c8_concepts [shape=record, label="
-    keyword - transformer: define-syntax, let-syntax, letrec-syntax\l
+    <keywords> keyword\l
     | <transfomers> transfomer\l
     | <expanders> expander\l
     "]    
-    c8 -> c8_concepts;
+    #c8 -> c8_concepts;
     
+    keywords [shape=record, label="
+    define-syntax\l
+    | let-syntax\l
+    | letrec-syntax\l
+    "]
+    c8_concepts:keywords -> keywords;
+
     transfomers [shape=record, label="
     syntax-rules\l
     | syntax-case, syntax\l
@@ -360,7 +686,7 @@ digraph tspl {
     "]
     c8_concepts:expanders -> expanders;
 
-    root -> {c8} [style=invis]
+    #root -> {c8} [style=invis]
 
 }
 %}
@@ -373,7 +699,7 @@ digraph tspl {
 {% dot tspl.svg
 digraph tspl {
     rankdir=LR;
-    splines=spline
+    splines=polyline
 
     node [shape=tab, width=1, height=0.1];
     edge [];
@@ -394,7 +720,7 @@ digraph tspl {
 {% dot tspl.svg
 digraph tspl {
     rankdir=LR;
-    splines=spline
+    splines=polyline
 
     node [shape=tab, width=1, height=0.1];
     edge [];
@@ -414,7 +740,7 @@ digraph tspl {
 {% dot tspl.svg
 digraph tspl {
     rankdir=LR;
-    splines=spline
+    splines=polyline
 
     node [shape=tab, width=1, height=0.1];
     edge [];
@@ -434,7 +760,7 @@ digraph tspl {
 {% dot tspl.svg
 digraph tspl {
     rankdir=LR;
-    splines=spline
+    splines=polyline
 
     node [shape=tab, width=1, height=0.1];
     edge [];

@@ -504,12 +504,6 @@ digraph tspl {
 
 Characters
 Strings
-Vectors
-Bytevectors
-Symbols
-Booleans
-Hashtables
-Enumerations
 
 <div>
 {% dot tspl.svg
@@ -523,12 +517,6 @@ digraph tspl {
     c6_concepts4 [shape=record, label="
     <c6_characters> character\l
     | <c6_strings> string\l
-    | <c6_vectors> vector\l
-    | <c6_bytevectors> bytevector\l
-    | <c6_symbols> symbol\l
-    | <c6_booleans> boolean\l
-    | <c6_hashtables> hashtable\l
-    | <c6_enumerations> enumeration\l
     "]
 
     c6_characters [shape=record, label="
@@ -551,7 +539,31 @@ digraph tspl {
     | {string-\>list | list-\>string}
     "]
     c6_concepts4:c6_strings -> c6_strings; 
+}
+%}
+</div>
+
+Vectors
+Bytevectors
+
+<div>
+{% dot tspl.svg
+digraph tspl {
+    rankdir=LR;
+    splines=polyline
+
+    node [shape=tab, width=1, height=0.1];
+    edge [];
     
+    c6_concepts4 [shape=record, label="
+    <c6_vectors> vector\l
+    | <c6_bytevectors> bytevector\l
+    | <c6_symbols> symbol\l
+    | <c6_booleans> boolean\l
+    | <c6_hashtables> hashtable\l
+    | <c6_enumerations> enumeration\l
+    "]
+
     c6_vectors [shape=record, label="
     {vector | make-vector}
     | {vector-length | vector-ref | vector-set! | vector-fill!}
@@ -582,7 +594,31 @@ digraph tspl {
     | bytevector-ieee-xxx-set!: single , double\l
     "]
     c6_concepts4:c6_bytevectors -> c6_bytevectors; 
+}
+%}
+</div>
+
+Symbols
+Booleans
+Hashtables
+Enumerations
+
+<div>
+{% dot tspl.svg
+digraph tspl {
+    rankdir=LR;
+    splines=polyline
+
+    node [shape=tab, width=1, height=0.1];
+    edge [];
     
+    c6_concepts4 [shape=record, label="
+    <c6_symbols> symbol\l
+    | <c6_booleans> boolean\l
+    | <c6_hashtables> hashtable\l
+    | <c6_enumerations> enumeration\l
+    "]
+
     c6_symbols [shape=record, label="
     symbol=?\l
     | {string-\>symbol | symbol-\>string}
@@ -595,12 +631,9 @@ digraph tspl {
     c6_concepts4:c6_booleans -> c6_booleans; 
     
     c6_hashtables [shape=record, label="
-    make-eq-hashtable\l
-    | make-eqv-hashtable\l
-    | make-hashtable\l
+    {make-eq-hashtable | make-eqv-hashtable | make-hashtable}
     | hashtable-mutable?\l
-    | hashtable-hash-function\l
-    | hashtable-equivalence-function\l
+    | {hashtable-hash-function | hashtable-equivalence-function}
     | {equal-hash | string-hash | string-ci-hash | symbol-hash}
     | {hashtable-set! | hashtable-ref | hashtable-contains | hashtable-update! | hashtable-delete!}
     | {hashtable-size | hashtable-copy | hashtable-clear!}
@@ -609,8 +642,7 @@ digraph tspl {
     c6_concepts4:c6_hashtables -> c6_hashtables; 
     
     c6_enumerations [shape=record, label="
-    define-enumeration\l
-    | make-enumeration\l
+    {define-enumeration | make-enumeration}
     | {enum-set-constructor | enum-set-universe}
 	| enum-set-\>list\l
 	| {enum-set-subset? | enum-set=?}
@@ -634,10 +666,117 @@ digraph tspl {
     node [shape=tab, width=1, height=0.1];
     edge [];
     
-    root [style=invis]
-    c7 [label="Input and Output"];
-    
-    root -> {c7} [style=invis]
+    #root [style=invis]
+    #c7 [label="Input and Output"];
+    c7_concepts [shape=record, label="
+    <c7_transcoders> transcoders\l
+    | <c7_open_files> open files\l
+    | <c7_standard_ports> standard ports\l
+    | <c7_string_bytevector_ports> string, bytevector ports\l
+    | <c7_open_custom_ports> open custom ports\l
+    | <c7_port_operations> port operation\l
+    | <c7_input_operations> input operation\l
+    | <c7_output_operations> output operation\l
+    | <c7_convenience_ios> convenience I/O\l
+    | <c7_filesystem_operations> filesystem operation\l
+    | <c7_string_bytevector_conversion> string, bytevector conversion\l
+    "]
+
+    c7_transcoders [shape=record, label="
+    make-transcoder\l
+    | {transcoder-codec | transcoder-eol-style | transcoder-error-handling-mode}
+    | native-transcoder\l
+    | {latin-1-codec | utf-8-codec | utf-16-codec}
+    | {eol-style | native-eol-style}
+    | error-handling-mode\l
+    "]
+    c7_concepts:c7_transcoders -> c7_transcoders;
+
+    c7_open_files [shape=record, label="
+    file-options\l
+    | {buffer-mode | buffer-mode?}
+    | {open-file-input-port | open-file-output-port | open-file-input/output-port}
+    "]
+    c7_concepts:c7_open_files -> c7_open_files;
+
+    c7_standard_ports [shape=record, label="
+    {current-input-port | current-output-port | current-error-port}
+    | {standard-input-port | standard-output-port | standard-error-port}
+    "]
+    c7_concepts:c7_standard_ports -> c7_standard_ports;
+
+    c7_string_bytevector_ports [shape=record, label="
+    {open-bytevector-input-port | open-string-input-port}
+    | {open-bytevector-output-port | open-string-output-port}
+    | {call-with-bytevector-output-port | call-with-string-output-port}
+    "]
+    c7_concepts:c7_string_bytevector_ports -> c7_string_bytevector_ports;
+
+    c7_open_custom_ports [shape=record, label="
+    make-custom-binary-input-port\l
+    | make-custom-binary-output-port\l
+    | make-custom-binary-input/output-port\l
+    | make-custom-textual-input-port\l
+    | make-custom-textual-output-port\l
+    | make-custom-textual-input/output-port\l
+    "]
+    c7_concepts:c7_open_custom_ports -> c7_open_custom_ports;
+
+    c7_port_operations [shape=record, label="
+    {port? | input-port? | output-port?}
+    | {binary-port? | textual-port?}
+    | close-port\l
+    | transcoded-port\l
+    | port-transcoder\l
+    | {port-position | port-has-port-position? | set-port-position! | port-has-set-port-position!?}
+    | call-with-port\l
+    | output-port-buffer-mode\l
+    "]
+    c7_concepts:c7_port_operations -> c7_port_operations;
+
+    c7_input_operations [shape=record, label="
+    {eof-object? | eof-object}
+    | {get-u8 | lookahead-u8}
+    | {get-bytevector-n | get-bytevector-n! | get-bytevector-some | get-bytevector-all}
+    | {get-char | lookahead-char}
+    | {get-string-n | get-string-n! | get-string-all | get-line}
+    | get-datum\l
+    | port-eof?\l
+    "]
+    c7_concepts:c7_input_operations -> c7_input_operations;
+
+    c7_output_operations [shape=record, label="
+    {put-u8 | put-bytevector | put-char | put-string | put-datum}
+    | flush-output-port\l
+    "]
+    c7_concepts:c7_output_operations -> c7_output_operations;
+
+    c7_convenience_ios [shape=record, label="
+    {open-input-file | open-output-file}
+    | {call-with-input-file | call-with-output-file}
+    | {with-input-from-file | with-output-to-file}
+    | {read | read-char | peek-char}
+    | {write | write-char}
+    | {display | newline}
+    | {close-input-port | close-output-port}
+    "]
+    c7_concepts:c7_convenience_ios -> c7_convenience_ios;
+
+    c7_filesystem_operations [shape=record, label="
+    file-exists?\l
+    | delete-file\l
+    "]
+    c7_concepts:c7_filesystem_operations -> c7_filesystem_operations;
+
+    c7_string_bytevector_conversion [shape=record, label="
+    {bytevector-\>string | string-\>bytevector}
+    | {string-\>utf8 | string-\>utf16 | string-\>utf32}
+    | {utf8-\>string | utf16-\>string | utf32-\>string}
+    "]
+    c7_concepts:c7_string_bytevector_conversion -> c7_string_bytevector_conversion;
+
+
+    #root -> {c7} [style=invis]
 }
 %}
 </div>
@@ -658,33 +797,37 @@ digraph tspl {
     
     #c8 [label="Syntactic Extension"];
     c8_concepts [shape=record, label="
-    <keywords> keyword\l
-    | <transfomers> transfomer\l
-    | <expanders> expander\l
+    <c8_keyword_bindings> keyword bindings\l
+    | <c8_syntax_rule> syntax-rule transformer\l
+    | <c8_syntax_case> syntax-case transformer\l
     "]    
     #c8 -> c8_concepts;
     
-    keywords [shape=record, label="
+    c8_keyword_bindings [shape=record, label="
     define-syntax\l
     | let-syntax\l
     | letrec-syntax\l
     "]
-    c8_concepts:keywords -> keywords;
+    c8_concepts:c8_keyword_bindings -> c8_keyword_bindings;
 
-    transfomers [shape=record, label="
+    c8_syntax_rule [shape=record, label="
     syntax-rules\l
-    | syntax-case, syntax\l
-    | identifier-syntax, make-variable-transformer
+    | {_ | ...}
+    | identifier-syntax
     "]
-    c8_concepts:transfomers -> transfomers;
+    c8_concepts:c8_syntax_rule -> c8_syntax_rule;
     
-    expanders [shape=record, label="
-    left to right\l
-    | variable definition\l
-    | keyword definition\l
-    | expression\l
+    c8_syntax_case [shape=record, label="
+    syntax-case\l
+    | {syntax | \#'template}
+    | {identifier? | free-identifier=? | bound-identifier=?}
+    | with-syntax\l
+    | {quasisyntax | \#`template | \#,templage | \#,@template}
+    | make-variable-transformer\l
+    | {syntax-\>datum | datum-\>syntax}
+    | generate-temporaries\l
     "]
-    c8_concepts:expanders -> expanders;
+    c8_concepts:c8_syntax_case -> c8_syntax_case;
 
     #root -> {c8} [style=invis]
 
@@ -704,11 +847,51 @@ digraph tspl {
     node [shape=tab, width=1, height=0.1];
     edge [];
     
-    root [style=invis]
+    #root [style=invis]
     
-    c9 [label="Records"];
-    
-    root -> {c9} [style=invis]
+    #c9 [label="Records"];
+    c9_concepts [shape=record, label="
+    <c9_define_records> define records\l
+    | <c9_procedural_interfaces> procedure interface\l
+    | <c9_inspection> inspection\l
+    "]
+
+    c9_define_records [shape=record, label="
+    define-record-type\l
+    | field cluse: fields, mutable, immutable\l
+    | parent clause\l
+    | nongenerative clause\l
+    | protocol clause\l
+    | sealed clause\l
+    | opaque clause\l
+    | parent-rtd clause\l
+    "]
+    c9_concepts:c9_define_records -> c9_define_records;
+
+    c9_procedural_interfaces [shape=record, label="
+    make-record-type-descriptor\l
+    | record-type-descriptor?\l
+    | make-record-constructor-descriptor\l
+    | {record-type-descriptor | record-constructor-descriptor}
+    | record-constructor\l
+    | record-predicate\l
+    | {record-accessor | record-mutator}
+    "]
+    c9_concepts:c9_procedural_interfaces -> c9_procedural_interfaces;
+
+    c9_inspection [shape=record, label="
+    record-type-name\l
+    | record-type-parent\l
+    | record-type-uid\l
+    | {record-type-fenerative? | record-type-sealed? | record-type-opaque?}
+    | record-type-field-name\l
+    | record-field-mutable?\l
+    | record?\l
+    | record-rtd\l
+    "]
+    c9_concepts:c9_inspection -> c9_inspection;
+
+    #root -> {c9} [style=invis]
 }
 %}
 </div>
@@ -725,11 +908,40 @@ digraph tspl {
     node [shape=tab, width=1, height=0.1];
     edge [];
     
-    root [style=invis]
+    #root [style=invis]
     
-    c10 [label="Libraries and Top-Level Programs"];
-    
-    root -> {c10} [style=invis]
+    #c10 [label="Libraries and Top-Level Programs"];
+    c10_concepts [shape=record, label="
+    <c10_rnrs> rnrs\l
+    | library\l
+    | export\l
+    | import\l
+    | {command-line | exit}
+    "]
+
+    c10_rnrs [shape=record, label="
+    {arithmetic bitwise | arithmetic fixnums | arithmetic flonums}
+    | bytevectors\l
+    | conditions\l
+    | control\l
+    | enums\l
+    | eval\l
+    | exceptions\l
+    | files\l
+    | hashtables\l
+    | {io ports | io simple}
+    | mutable-pairs\l
+    | mutable-strings\l
+    | programs\l
+    | r5rs\l
+    | {records procedural | records syntactic | records inspection}
+    | sorting\l
+    | syntax-case\l
+    | unicode\l
+    "]
+    c10_concepts:c10_rnrs -> c10_rnrs;
+
+    #root -> {c10} [style=invis]
 }
 %}
 </div>
@@ -745,11 +957,68 @@ digraph tspl {
     node [shape=tab, width=1, height=0.1];
     edge [];
     
-    root [style=invis]
+    #root [style=invis]
     
-    c11 [label="Exceptions and Conditions"];
+    #c11 [label="Exceptions and Conditions"];
+    c11_concepts [shape=record, label="
+    <c11_raise_handle> raise and handle exceptions\l
+    | <c11_define_ct> define condition types\l
+    | <c11_standard_ct> standard condition types\l
+    | <c11_standard_io_ct> standard I/O condition types\l
+    "]
+
+    c11_raise_handle [shape=record, label="
+    {raise | raise-continuable}
+    | {error | assertion-violation}
+    | assert\l
+    | syntax-violation\l
+    | with-exception-handler\l
+    | guard\l
+    "]
+    c11_concepts:c11_raise_handle -> c11_raise_handle;
+
+    c11_define_ct [shape=record, label="
+    &condition\l
+    | condition?\l
+    | condition\l
+    | simple-conditions\l
+    | define-condition-type\l
+    | {condition-predicate | condition-accessor}
+    "]
+    c11_concepts:c11_define_ct -> c11_define_ct;
+
+    c11_standard_ct [shape=record, label="
+    {&serious | make-serious-condition | serious-condition?}
+    | {&violation | make-violation | violation?}
+    | {&assertion | make-assertion-violation | assertion-violation?}
+    | {&error | make-error | error?}
+    | {&warning | make-warning | warning?}
+    | {&message | make-message-condition | message-condition? | condition-message}
+    | {&irritants | make-irritants-condition | irritants-condition? | condition-irritants}
+    | {&who | make-who-condition | who-condition? | condition-who}
+    | {&non-continuable | make-non-continuable-violation |non-continuable-violation?}
+    | {&implementation-restriction | make-implementation-restriction-violation | implementation-restriction-violation?}
+    | {&lexical | make-lexical-violation | lexical-violation?}
+    | {&syntax | syntax-violation? | syntax-violation-form | syntax-violation-subform}
+    | {&undefined | make-undefined-violation | undefined-violation?}
+    | {&no-nans | make-no-nans-violation | no-nans-violation?}
+    "]
+    c11_concepts:c11_standard_ct -> c11_standard_ct;    
     
-    root -> {c11} [style=invis]
+    c11_standard_io_ct [shape=record, label="
+    {&i/o | make-i/o-error | i/o-error?}
+    | {&i/o-read | make-i/o-read-error | i/o-read-error?}
+    | {&i/o-write | make-i/o-write-error | i/o-write-error?}
+    | {&i/o-invalid-position | make-i/o-invalid-position-error | i/o-invalid-position-error? | i/o-error-position}
+    | {&i/o-filename | make-i/o-filename-error | i/o-filename-error? | i/o-error-filename}
+    | {&i/o-file-protection | make-i/o-file-protection-error | i/o-file-protection-error?}
+    | {&i/o-file-is-read-only | make-i/o-file-is-read-only-error | i/o-file-is-read-only-error?}
+    | {&i/o-file-already-exists | make-i/o-file-already-exists-error | i/o-file-already-exists-error?}
+    | {&i/o-file-does-not-exists | make-i/o-file-does-not-exists-error | i/o-file-does-not-exists-error?}    
+    "]
+    c11_concepts:c11_standard_io_ct -> c11_standard_io_ct;
+
+    #root -> {c11} [style=invis]
 }
 %}
 </div>
@@ -765,11 +1034,24 @@ digraph tspl {
     node [shape=tab, width=1, height=0.1];
     edge [];
     
-    root [style=invis]
+    #root [style=invis]
     
-    c12 [label="Extended Examples"];
-    
-    root -> {c12} [style=invis]
+    #c12 [label="Extended Examples"];
+    c11_concepts [shape=record, label="
+    matrix and vector multiplication\l
+    | sorting\l
+    | a set constructor\l
+    | word frequency counting\l
+    | scheme printer\l
+    | formatted output\l
+    | a meta-circular interpreter for scheme\l
+    | define abstract objects\l
+    | fast fourier transform\l
+    | a unification algorithm\l
+    | multitasking with Engines\l
+    "]
+
+    #root -> {c12} [style=invis]
 }
 %}
 </div>

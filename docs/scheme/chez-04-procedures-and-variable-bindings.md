@@ -1,11 +1,12 @@
-### 4.1 Variable References
+# 4 Procedures and Variable Bindings
+## 4.1 Variable References
 
 ``` scheme
 syntax: variable
 returns: the value of variable
 ```
 
-### 4.2 Lambda
+## 4.2 Lambda
 
 ``` scheme
 syntax: (lambda formals body1 body2 ...)
@@ -25,7 +26,7 @@ libraries: (rnrs base), (rnrs)
 
 当体被求值时, 体中的表达式按序求值, 过程返回最后一个表达式的值.
 
-### 4.3 Case-Lambda
+## 4.3 Case-Lambda
 
 ``` scheme
 syntax: (case-lambda clause ...)
@@ -39,7 +40,7 @@ libraries: (rnrs control), (rnrs)
 
 > 例: case-lambdas.ss
 
-### 4.4 Local Binding
+## 4.4 Local Binding
 
 ``` scheme
 syntax: (let ((var expr) ...) body1 body2 ...) 
@@ -58,7 +59,7 @@ libraries: (rnrs base), (rnrs)
 
 `letrec*`与`letrec`类似, 除了`expr ...`按从左至右的顺序求值.
 
-### 4.5 Multiple Values
+## 4.5 Multiple Values
 
 ``` scheme
 syntax: (let-values ((formals expr) ...) body1 body2 ...) 
@@ -71,7 +72,7 @@ libraries: (rnrs base), (rnrs)
 
 > 例: multiple-values.ss
 
-### 4.6 Variable Definitions
+## 4.6 Variable Definitions
 
 ``` scheme
 syntax: (define var expr)
@@ -84,7 +85,7 @@ libraries: (rnrs base), (rnrs)
 
 定义可以出现在`library`体开始处、顶层程序的体中、`lambda`或`case-lambda`体的开始处、从`lambda`导出的任意形式的体(例如`let`或`letrec*`)的开始处.
 
-### 4.7 Assignment
+## 4.7 Assignment
 
 ``` scheme
 syntax: (set! var expr)

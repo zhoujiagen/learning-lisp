@@ -1,4 +1,5 @@
-### 3.1 Syntactic Extension
+# 3 Going Further
+## 3.1 Syntactic Extension
 
 核心句法形式(core syntactic forms)包括:
 
@@ -66,7 +67,7 @@
 
 `let*`: 与`let`类似, 但按顺序求值绑定, 之前的绑定在后续的绑定表达式中可见.
 
-### 3.2 More Recursion
+## 3.2 More Recursion
 
 ``` scheme
 (let ((var expr) ...) body1 body2 ...)
@@ -151,7 +152,7 @@
 |3628800
 ```
 
-### 3.3 Continuations
+## 3.3 Continuations
 
 求值表达式时需要关注的事情:
 
@@ -200,7 +201,7 @@
 (((call/cc (lambda (k) k)) (lambda (x) x)) "hi")
 ```
 
-### 3.4 Continuation Passing Style
+## 3.4 Continuation Passing Style
 
 通常, 每个过程调用都会关联一个continuation:
 
@@ -224,7 +225,7 @@
     (displayln (h '() (lambda (v) (cons 'd v))))) ; (d b a c)
 ```
 
-### 3.5 Internal Definitions
+## 3.5 Internal Definitions
 
 内部定义: 定义可以出现在`lambda`、`let`或`letrec`的体中, 创建的绑定的作用域在出现的体中.
 
@@ -263,7 +264,7 @@ expr2
 (else <expression1> <expression2> ...)
 ```
 
-### 3.6 Libraries
+## 3.6 Libraries
 
 > Example: grade library
 

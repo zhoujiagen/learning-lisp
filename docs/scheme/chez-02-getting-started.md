@@ -1,5 +1,5 @@
-
-### 2.1 Interacting with Scheme
+# 2 Getting Started
+## 2.1 Interacting with Scheme
 
 REPL: read-evalute-print loop.
 
@@ -18,7 +18,7 @@ REPL: read-evalute-print loop.
 (load "square.ss")
 ```
 
-### 2.2 Simple Expressions
+## 2.2 Simple Expressions
 
 过程应用(procedure application): `(procedure arg ...)`.
 
@@ -65,7 +65,7 @@ REPL: read-evalute-print loop.
 %}
 </div>
 
-### 2.3 Evaluating Scheme Expressions
+## 2.3 Evaluating Scheme Expressions
 
 ```
 (procedure arg1 ... argn)
@@ -77,7 +77,7 @@ REPL: read-evalute-print loop.
 核心句法形式(core syntactic form): 常量对象, 过程应用, `quote`表达式等;<br/>
 句法扩展(syntactic extension): 用核心句法形式定义的句法形式.
 
-### 2.4 Variables and Let Expressions
+## 2.4 Variables and Let Expressions
 
 `let`表达式: 句法形式`let`绑定变量
 
@@ -98,7 +98,7 @@ REPL: read-evalute-print loop.
 - 作用域(scope): 变量绑定可见的区域;
 - 词法作用域(lexical scoping): 每个绑定的作用域可以通过直接文本分析程序获得.
 
-### 2.5 Lambda Expressions
+## 2.5 Lambda Expressions
 
 `lambda`表达式: 创建新的过程
 
@@ -143,7 +143,7 @@ REPL: read-evalute-print loop.
   expr ...)
 ```
 
-### 2.6 Top-Level Definitions
+## 2.6 Top-Level Definitions
 
 `define`创建顶级定义(top-level definition):
 
@@ -183,7 +183,7 @@ REPL: read-evalute-print loop.
 (proc1 'a 'b) ; (b . a)
 ```
 
-### 2.7 Conditional Expressions
+## 2.7 Conditional Expressions
 
 `if`表达式: 使用`if`句法形式
 
@@ -236,7 +236,7 @@ REPL: read-evalute-print loop.
       [else 0])))
 ```
 
-### 2.8 Simple Recursion
+## 2.8 Simple Recursion
 
 递归过程(recursive procedure): 应用自身的过程.<br/>
 两个基本元素: base case, recursion step.
@@ -280,7 +280,7 @@ Trace:
 (map abs '(1 -2 3 -4 5 -6)) ; (1 2 3 4 5 6)            
 ```
 
-### 2.9 Assignment
+## 2.9 Assignment
 
 赋值(assignment)并不像使用`let`和`lambda`创建新的绑定(binding), 而是使用`set!`修改既有绑定的值.
 

@@ -1,4 +1,4 @@
-
+# 8 Syntactic Extension
 **形式**
 
 ```
@@ -32,7 +32,7 @@
 - 表达式: 完全展开所有延迟的右侧表达式、当前和剩下的体表达式.
 
 
-### 8.1 Keyword Bindings
+## 8.1 Keyword Bindings
 
 
 (1) `define-syntax`
@@ -54,7 +54,7 @@
 - `keyword`均在`form1` `form2` `...`中绑定, 在`letrec-syntax`中的`expr`中绑定.
 
 
-### 8.2 Syntax-Rules Transformers
+## 8.2 Syntax-Rules Transformers
 
 
 ``` scheme
@@ -118,7 +118,7 @@ _
 - `(identifier-syntax (id1 tmpl1) ((set! id2 e2) tmpl2))`则允许transformer指定使用`set!`时的操作.
 
 
-### 8.3 Syntax-Case Transformers
+## 8.3 Syntax-Case Transformers
 
 
 `syntax-case`是`syntax-rules`的泛化版本.
@@ -241,4 +241,4 @@ _
 `list`可以是任意列表, 它的内容不重要. 生成的临时标识符的数量与`list`中元素数量相同, 每个临时标识符互不相同.
 
 
-### 8.4 Examples
+## 8.4 Examples

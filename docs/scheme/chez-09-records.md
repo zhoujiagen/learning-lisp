@@ -42,8 +42,7 @@ field-name
 - Opaque clause
 
 - Parent-rtd clause
-
-
-### 9.1 Defining Records
-### 9.2 Procedural Interface
-### 9.3 Inspection
+# 9 Records
+## 9.1 Defining Records
+## 9.2 Procedural Interface
+## 9.3 Inspection

@@ -27,7 +27,7 @@
 ; 表达式
 <expression>            --> <constant>
                             | <variable>
-                            | (quote <datum>) ; datum: 任意Scheme对象
+                            | (quote <datum>)
                             | (lambda <formals> <expression> <expression>*)
                             | (if <expression> <expression> <expression>)
                             | (set! <variable> <expression>)
@@ -160,7 +160,7 @@
 
 在表达式求值的过程中任意时间点, 存在continuation准备好完成, 或者至少可以继续从该时间点开始的计算.
 
-例: 求值`(if (null? x) (quote ()) (cdr x))`, continuation等待
+例: `x`有值`(a b c)`时, 求值`(if (null? x) (quote ()) (cdr x))`, continuation等待
 
 - `(if (null? x) (quote ()) (cdr x))`的值;
 - `(null? x)`的值;
@@ -256,6 +256,7 @@ expr2
 
 ``` scheme
 (case <key> <case clause1> <case clause2> ...)    ; syntax 
+
 ; <Key> must be an expression. 
 ; Each <case clause> must have one of the following forms:
 ((<datum1> ...) <expression1> <expression2> ...)

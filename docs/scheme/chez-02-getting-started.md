@@ -227,7 +227,7 @@ REPL: read-evalute-print loop.
 (cond (test expr) ... (else expr))
 ```
 
-``` sheme
+``` scheme
 (define sign
   (lambda (n)
     (cond
